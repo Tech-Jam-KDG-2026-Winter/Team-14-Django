@@ -1,4 +1,5 @@
 from pathlib import Path
+from datetime import timedelta
 
 # config/settings/base.py
 # BASE_DIR は manage.py があるディレクトリを指すのが都合が良い
@@ -20,6 +21,7 @@ INSTALLED_APPS = [
     # 外部ライブラリ(API用)
     "rest_framework",
     "rest_framework.authtoken",
+    "rest_framework_simplejwt.token_blacklist",
     "corsheaders",
     "dj_rest_auth",
     "allauth",
@@ -105,9 +107,14 @@ REST_FRAMEWORK = {
 }
 
 # JWT の詳細設定
-REST_USE_JWT = True
-JWT_AUTH_COOKIE = 'my-app-auth'
-JWT_AUTH_REFRESH_COOKIE = 'my-refresh-token'
+REST_AUTH = {
+    'USE_JWT': True,
+    'JWT_AUTH_HTTPONLY': True,
+    'JWT_AUTH_COOKIE': 'my-app-auth',
+    'JWT_AUTH_REFRESH_COOKIE': 'my-refresh-token',
+    'OLD_PASSWORD_FIELD_ENABLED': True,
+    'LOGOUT_ON_PASSWORD_CHANGE': True,
+}
 
 # 開発用：ログイン/サインアップの挙動
 ACCOUNT_EMAIL_VERIFICATION = 'none'
@@ -115,3 +122,11 @@ ACCOUNT_AUTHENTICATION_METHOD = 'username'
 
 # CORS許可設定 (開発用: 全て許可)
 CORS_ALLOW_ALL_ORIGINS = True
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': True,                   # リフレッシュ時に新しいリフレッシュトークンを発行
+    'BLACKLIST_AFTER_ROTATION': True,                # 古いリフレッシュトークンをブラックリストへ
+    'AUTH_HEADER_TYPES': ('Bearer',),
+}
