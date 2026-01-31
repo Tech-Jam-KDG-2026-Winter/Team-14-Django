@@ -20,7 +20,6 @@ INSTALLED_APPS = [
 
     # 外部ライブラリ(API用)
     "rest_framework",
-    "rest_framework.authtoken",
     "rest_framework_simplejwt.token_blacklist",
     "corsheaders",
     "dj_rest_auth",
@@ -117,6 +116,8 @@ REST_AUTH = {
     
     'OLD_PASSWORD_FIELD_ENABLED': True,
     'LOGOUT_ON_PASSWORD_CHANGE': True,
+
+    'TOKEN_MODEL': None,
 }
 
 # 開発用：ログイン/サインアップの挙動
