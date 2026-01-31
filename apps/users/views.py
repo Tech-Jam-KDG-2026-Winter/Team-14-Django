@@ -1,11 +1,12 @@
 from django.shortcuts import render
 
 # Create your views here.
-from rest_framework import generics, status
+from django.contrib.auth.models import User
+from rest_framework import generics, status, permissions
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from .models import UserProfile
-from .serializers import CustomUserDetailsSerializer, UserProfileSerializer
+from .serializers import CustomUserDetailsSerializer, UserProfileSerializer, UserCreateSerializer
 
 class UserMeView(generics.RetrieveUpdateAPIView):
     permission_classes = [IsAuthenticated]
@@ -31,3 +32,8 @@ class StepSyncView(generics.GenericAPIView):
     permission_classes = [IsAuthenticated]
     def post(self, request):
         return Response({"detail": "Google Fitから歩数を取得"})
+    
+class UserCreateView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserCreateSerializer
+    permission_classes = [permissions.AllowAny]
