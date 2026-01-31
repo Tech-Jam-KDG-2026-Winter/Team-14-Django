@@ -99,7 +99,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # REST Framework の基本設定
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'dj_rest_auth.utils.JWTCookieAuthentication',
+        'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
@@ -112,6 +112,9 @@ REST_AUTH = {
     'JWT_AUTH_HTTPONLY': True,
     'JWT_AUTH_COOKIE': 'my-app-auth',
     'JWT_AUTH_REFRESH_COOKIE': 'my-refresh-token',
+
+    'USER_DETAILS_SERIALIZER': 'apps.users.serializers.CustomUserDetailsSerializer',
+    
     'OLD_PASSWORD_FIELD_ENABLED': True,
     'LOGOUT_ON_PASSWORD_CHANGE': True,
 }
