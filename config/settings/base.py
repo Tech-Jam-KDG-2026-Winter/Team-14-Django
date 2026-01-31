@@ -17,6 +17,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
 
     # starter apps
+    'rest_framework',
     "apps.common",
     'apps.users',
     'apps.tasks',

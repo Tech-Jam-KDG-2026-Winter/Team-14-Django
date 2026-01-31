@@ -4,3 +4,6 @@ __pycache__/
 *.sqlite3
 .env
 credentials.json
+token.json
+credentials.json
+.DS_Storegit reset 
