@@ -1,12 +1,13 @@
 from django.shortcuts import render
 
 # Create your views here.
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from rest_framework import generics, status, permissions
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from .models import UserProfile
 from .serializers import CustomUserDetailsSerializer, UserProfileSerializer, UserCreateSerializer
+
+User = get_user_model()
 
 class UserMeView(generics.RetrieveUpdateAPIView):
     permission_classes = [IsAuthenticated]

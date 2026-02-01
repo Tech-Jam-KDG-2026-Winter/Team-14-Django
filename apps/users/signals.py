@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from django.dispatch import receiver
 from .models import UserProfile, UserSettings
 
-User = get_user_model
+User = get_user_model()
 
 @receiver(post_save, sender=User)
 def create_user_related_models(sender, instance, created, **kwargs):
