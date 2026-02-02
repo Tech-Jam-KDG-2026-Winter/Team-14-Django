@@ -3,12 +3,13 @@ from django.shortcuts import render
 # Create your views here.
 from django.contrib.auth import get_user_model
 from rest_framework import generics, status, permissions
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken, OutstandingToken
 from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken
-from .serializers import CustomUserDetailsSerializer, UserProfileSerializer, UserCreateSerializer
+from .serializers import CustomUserDetailsSerializer, UserProfileSerializer, UserCreateSerializer, GoogleFitCredentialSerializer
+import json
 
 User = get_user_model()
 
@@ -29,9 +30,23 @@ class UserMeView(generics.RetrieveUpdateAPIView):
 
 class GoogleFitAuthView(generics.GenericAPIView):
     permission_classes = [IsAuthenticated]
-    def get(self, request):
-        return Response({"detail": "Google Fit認証画面へリダイレクト"})
+    serializer_class = GoogleFitCredentialSerializer
 
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        profile = request.user.profile
+        profile.google_fit_credentials = json.dumps(
+            serializer.validated_data["google_fit_credentials"]
+        )
+        profile.save()
+
+        return Response(
+            {"detail": "Google Fit認証情報を保存しました"},
+            status=status.HTTP_200_OK
+        )
+    
 class StepSyncView(generics.GenericAPIView):
     permission_classes = [IsAuthenticated]
     def post(self, request):
@@ -40,7 +55,7 @@ class StepSyncView(generics.GenericAPIView):
 class UserCreateView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserCreateSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [AllowAny]
 
 class CustomLogoutView(APIView):
     permission_classes = [IsAuthenticated]

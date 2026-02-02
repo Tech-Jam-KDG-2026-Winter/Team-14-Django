@@ -1,9 +1,13 @@
+from dotenv import load_dotenv  
 from pathlib import Path
 from datetime import timedelta
+import os
 
 # config/settings/base.py
 # BASE_DIR は manage.py があるディレクトリを指すのが都合が良い
-BASE_DIR = Path(__file__).resolve().parents[3]
+BASE_DIR = Path(__file__).resolve().parents[2]
+
+load_dotenv(BASE_DIR / '.env')
 
 SECRET_KEY = "django-insecure-x!e8w94#_z0x*10ek4f^v2*19%1hs167aj8!57htfo@mxalpeg"
 DEBUG = True
@@ -136,3 +140,9 @@ SIMPLE_JWT = {
     'BLACKLIST_AFTER_ROTATION': True,                # 古いリフレッシュトークンをブラックリストへ
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
+
+FERNET_KEYS = [
+    os.environ.get('FERNET_KEY', '')
+]
+
+AUTH_USER_MODEL = 'users.User'

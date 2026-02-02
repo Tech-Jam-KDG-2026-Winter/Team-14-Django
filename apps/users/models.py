@@ -1,16 +1,19 @@
 from django.db import models
-from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AbstractUser
+from fernet_fields import EncryptedTextField 
 
 # Create your models here.
 
-User = get_user_model()
+class User(AbstractUser):
+    pass
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
-    google_fit_credentials = models.JSONField(
+    
+    google_fit_credentials = EncryptedTextField(
         blank=True, 
         null=True,
-        help_text="GoogleFitの認証情報の保存用")
+        help_text="GoogleFitの認証情報(暗号化済み)")
     
     weekly_heavy_goal = models.ForeignKey(
         'tasks.Task', 

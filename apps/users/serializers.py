@@ -4,12 +4,13 @@ from django.core.validators import EmailValidator
 from django.db import IntegrityError, transaction
 from rest_framework import serializers
 from .models import User, UserProfile, UserSettings
+import json
 import re
 
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
-        fields = ('daily_step_goal', 'weekly_heavy_goal', 'google_fit_credentials')
+        fields = ('daily_step_goal', 'weekly_heavy_goal')
 
     def validate_daily_step_goal(self, value):
         if value is not None and value < 0:
@@ -18,11 +19,23 @@ class UserProfileSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("歩数目標が大きすぎます。")
         return value
     
+class GoogleFitCredentialSerializer(serializers.Serializer):
+    google_fit_credentials = serializers.JSONField(write_only=True)
+    
     def validate_google_fit_credentials(self, value):
         if value is not None and not value:
             raise serializers.ValidationError(
                 "Google Fitの認証情報が正しく取得できませんでした。"
             )
+        
+        required_keys = ['refresh_token', 'token_uri', 'client_id']
+        
+        for key in required_keys:
+            if key not in value:
+                raise serializers.ValidationError(
+                    f"{key} が認証情報に含まれていません。"
+                )
+
         return value
         
 class UserSettingsSerializer(serializers.ModelSerializer):

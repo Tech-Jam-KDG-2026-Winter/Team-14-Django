@@ -1,7 +1,6 @@
 ### 変数定義
 @baseUrl = http://127.0.0.1:8000
-@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzcwMDAwNjk1LCJpYXQiOjE3Njk5OTcwOTUsImp0aSI6IjIyNDk3YmY1MWMxNjRmOTk5YmE3YTU4ZGRlOWVkZTliIiwidXNlcl9pZCI6IjYifQ.vFOqs_jLfTUyEgRMtRjiCxyMjyne96J-RHEtHJ7ZT78
-
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzcwMDE1NTc2LCJpYXQiOjE3NzAwMTE5NzYsImp0aSI6IjE1MDVmZjIyNmY4YjRlMjRiZjUxMzJlMTMyNDdjNDdiIiwidXNlcl9pZCI6IjIifQ.snl3_F9RvxS9-GfkmRFtghiLYpr5hX5-X4npaDaQE_I
 ################################################################################
 ### 1. ユーザー登録
 POST {{baseUrl}}/api/users/signup/
@@ -58,6 +57,7 @@ POST {{baseUrl}}/api/auth/token/refresh/
 Content-Type: application/json
 
 {
+  "refresh": "ここにログイン時に取得したリフレッシュトークンを貼る"
 }
 
 ################################################################################
@@ -103,5 +103,26 @@ Content-Type: application/json
 
 ################################################################################
 ### 11. ログアウト後のアクセステスト（401エラーになるはず）
+GET {{baseUrl}}/api/users/me/
+Authorization: Bearer {{accessToken}}
+
+################################################################################
+### 12. Google Fit認証情報の保存テスト（暗号化確認）
+PATCH {{baseUrl}}/api/users/me/
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "google_fit_credentials": {
+    "access_token": "ya29.a0AfH6SMBx_test_token_12345",
+    "refresh_token": "1//0gKZs_test_refresh_67890",
+    "token_uri": "https://oauth2.googleapis.com/token",
+    "client_id": "test-client-id.apps.googleusercontent.com",
+    "client_secret": "test-client-secret-abc123"
+  }
+}
+
+################################################################################
+### 13. Google Fit認証情報の取得テスト（復号化確認）
 GET {{baseUrl}}/api/users/me/
 Authorization: Bearer {{accessToken}}
