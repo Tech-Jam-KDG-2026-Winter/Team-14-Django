@@ -1,0 +1,107 @@
+### 変数定義
+@baseUrl = http://127.0.0.1:8000
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzcwMDAwNjk1LCJpYXQiOjE3Njk5OTcwOTUsImp0aSI6IjIyNDk3YmY1MWMxNjRmOTk5YmE3YTU4ZGRlOWVkZTliIiwidXNlcl9pZCI6IjYifQ.vFOqs_jLfTUyEgRMtRjiCxyMjyne96J-RHEtHJ7ZT78
+
+################################################################################
+### 1. ユーザー登録
+POST {{baseUrl}}/api/users/signup/
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "email": "test@example.com",
+  "password": "SecurePass123!",
+  "password_confirm": "SecurePass123!"
+}
+
+################################################################################
+### 2. ログイン
+POST {{baseUrl}}/api/auth/login/
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "SecurePass123!"
+}
+
+################################################################################
+### 3. ユーザー情報取得（認証必須）
+# ログイン後、上のレスポンスからaccessトークンをコピーして@accessTokenに貼り付けてください
+GET {{baseUrl}}/api/users/me/
+Authorization: Bearer {{accessToken}}
+
+################################################################################
+### 4. プロフィール更新（認証必須）
+PATCH {{baseUrl}}/api/users/me/
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "daily_step_goal": 10000,
+  "weekly_heavy_goal": 1
+}
+
+################################################################################
+### 5. プロフィール更新（バリデーションエラーのテスト）
+PATCH {{baseUrl}}/api/users/me/
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "daily_step_goal": -100
+}
+
+################################################################################
+### 6. トークンリフレッシュ
+# ログイン後、refreshトークンをコピーして@refreshTokenに貼り付けてください
+POST {{baseUrl}}/api/auth/token/refresh/
+Content-Type: application/json
+
+{
+}
+
+################################################################################
+### 7. ログアウト（認証必須）
+POST {{baseUrl}}/api/users/logout/
+Authorization: Bearer {{accessToken}}
+
+################################################################################
+### 8. 新規ユーザー登録（バリデーションエラーテスト：短いユーザー名）
+POST {{baseUrl}}/api/users/signup/
+Content-Type: application/json
+
+{
+  "username": "ab",
+  "email": "test2@example.com",
+  "password": "SecurePass123!",
+  "password_confirm": "SecurePass123!"
+}
+
+################################################################################
+### 9. 新規ユーザー登録（バリデーションエラーテスト：パスワード不一致）
+POST {{baseUrl}}/api/users/signup/
+Content-Type: application/json
+
+{
+  "username": "testuser2",
+  "email": "test3@example.com",
+  "password": "SecurePass123!",
+  "password_confirm": "DifferentPass123!"
+}
+
+################################################################################
+### 10. 新規ユーザー登録（バリデーションエラーテスト：弱いパスワード）
+POST {{baseUrl}}/api/users/signup/
+Content-Type: application/json
+
+{
+  "username": "testuser2",
+  "email": "test3@example.com",
+  "password": "12345678",
+  "password_confirm": "12345678"
+}
+
+################################################################################
+### 11. ログアウト後のアクセステスト（401エラーになるはず）
+GET {{baseUrl}}/api/users/me/
+Authorization: Bearer {{accessToken}}

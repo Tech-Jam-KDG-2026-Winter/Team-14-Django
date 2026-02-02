@@ -21,7 +21,7 @@ class UserProfile(models.Model):
         related_name='users_with_this_goal'
     )
     
-    daily_step_goal = models.PositiveIntegerField(default=10000)  # 1日の歩数目標
+    daily_step_goal = models.IntegerField(default=10000)  # 1日の歩数目標
 
     def __str__(self):
         return f"{self.user.username} Profile"

@@ -118,6 +118,8 @@ REST_AUTH = {
     'LOGOUT_ON_PASSWORD_CHANGE': True,
 
     'TOKEN_MODEL': None,
+
+    'SESSION_LOGIN': False,
 }
 
 # 開発用：ログイン/サインアップの挙動

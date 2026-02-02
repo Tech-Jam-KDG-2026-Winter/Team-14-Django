@@ -5,6 +5,9 @@ from django.contrib.auth import get_user_model
 from rest_framework import generics, status, permissions
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework_simplejwt.tokens import RefreshToken, OutstandingToken
+from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken
 from .serializers import CustomUserDetailsSerializer, UserProfileSerializer, UserCreateSerializer
 
 User = get_user_model()
@@ -38,3 +41,33 @@ class UserCreateView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserCreateSerializer
     permission_classes = [permissions.AllowAny]
+
+class CustomLogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        try:
+            # リフレッシュトークンをクッキーから取得
+            refresh_token = request.COOKIES.get('my-refresh-token')
+            
+            if refresh_token:
+                # リフレッシュトークンをブラックリストに追加
+                token = RefreshToken(refresh_token)
+                token.blacklist()
+            
+            response = Response(
+                {"detail": "Successfully logged out."},
+                status=status.HTTP_200_OK
+            )
+            
+            # クッキーをクリア
+            response.delete_cookie('my-app-auth')
+            response.delete_cookie('my-refresh-token')
+            
+            return response
+            
+        except Exception as e:
+            return Response(
+                {"detail": "ログアウトに成功しましたが、トークンの無効化に失敗しました。"},
+                status=status.HTTP_200_OK
+            )
