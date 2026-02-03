@@ -9,8 +9,20 @@ BASE_DIR = Path(__file__).resolve().parents[2]
 
 load_dotenv(BASE_DIR / '.env')
 
-SECRET_KEY = "django-insecure-x!e8w94#_z0x*10ek4f^v2*19%1hs167aj8!57htfo@mxalpeg"
-DEBUG = True
+SECRET_KEY = os.environ.get("SECRET_KEY")
+
+if not SECRET_KEY:
+    raise ValueError("SECRET_KEY is not set")
+
+DEBUG = os.environ.get("DEBUG", "False") == "True"
+
+FERNET_KEY = os.environ.get("FERNET_KEY")
+
+if not FERNET_KEY:
+    raise ValueError("FERNET_KEY is not set")
+
+FERNET_KEYS = [FERNET_KEY]
+
 ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
@@ -140,9 +152,5 @@ SIMPLE_JWT = {
     'BLACKLIST_AFTER_ROTATION': True,                # 古いリフレッシュトークンをブラックリストへ
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
-
-FERNET_KEYS = [
-    os.environ.get('FERNET_KEY', '')
-]
 
 AUTH_USER_MODEL = 'users.User'

@@ -6,9 +6,8 @@ from rest_framework import generics, status, permissions
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework_simplejwt.tokens import RefreshToken, OutstandingToken
-from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken
-from .serializers import CustomUserDetailsSerializer, UserProfileSerializer, UserCreateSerializer, GoogleFitCredentialSerializer
+from rest_framework_simplejwt.tokens import RefreshToken
+from .serializers import CustomUserDetailsSerializer, UserProfileSerializer, UserCreateSerializer, GoogleFitCredentialSerializer, PasswordChangeSerializer
 import json
 
 User = get_user_model()
@@ -37,9 +36,7 @@ class GoogleFitAuthView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
 
         profile = request.user.profile
-        profile.google_fit_credentials = json.dumps(
-            serializer.validated_data["google_fit_credentials"]
-        )
+        profile.google_fit_credentials = serializer.validated_data["google_fit_credentials"]
         profile.save()
 
         return Response(
@@ -56,9 +53,10 @@ class UserCreateView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserCreateSerializer
     permission_classes = [AllowAny]
+    authentication_classes = []
 
 class CustomLogoutView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = []
 
     def post(self, request):
         try:
@@ -86,3 +84,31 @@ class CustomLogoutView(APIView):
                 {"detail": "ログアウトに成功しましたが、トークンの無効化に失敗しました。"},
                 status=status.HTTP_200_OK
             )
+        
+class PasswordChangeView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        serializer = PasswordChangeSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            user = request.user
+            user.set_password(serializer.validated_data['new_password'])
+            user.save()
+            return Response({"detail": "パスワードを変更しました。"}, status=status.HTTP_200_OK)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class UserDeleteView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def delete(self, request):
+        user = request.user
+        user.soft_delete()
+        response = Response(
+            {"detail": "退会しました。"}, 
+            status=status.HTTP_200_OK
+        )
+        response.delete_cookie('my-app-auth')
+        response.delete_cookie('my-refresh-token')
+
+        return response

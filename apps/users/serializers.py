@@ -4,7 +4,6 @@ from django.core.validators import EmailValidator
 from django.db import IntegrityError, transaction
 from rest_framework import serializers
 from .models import User, UserProfile, UserSettings
-import json
 import re
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -139,3 +138,43 @@ class UserCreateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({
                 'detail': "システムエラーが発生しました。しばらくしてから再度お試しください"
             })
+        
+class PasswordChangeSerializer(serializers.Serializer):
+    old_password = serializers.CharField(style={'input_type':'password'})
+    new_password = serializers.CharField(style={'input_type':'password'})
+    new_password_confirm = serializers.CharField(style={'input_type':'password'})
+
+    def validate_old_password(self, value):
+        user = self.context['request'].user
+        if not user.check_password(value):
+            raise serializers.ValidationError("現在のパスワードが正しくありません。")
+        return value
+    
+    def validate(self, data):
+        if data['new_password'] != data['new_password_confirm']:
+            raise serializers.ValidationError({"new_password_confirm": "新しいパスワードが一致しません。"})
+        
+        try:
+            validate_password(data['new_password'], user=self.context['request'].user)
+        except DjangoValidationError as e:
+            custom_messages = []
+            error_mapping = {
+                "too short": "パスワードが短すぎます（8文字以上必要です）。",
+                "too common": "このパスワードは一般的すぎます。",
+                "entirely numeric": "パスワードは数字だけでは登録できません。",
+                "too similar": "パスワードがユーザー情報と似すぎています。",
+            }
+            
+            for msg in e.messages:
+                matched = False
+                for key, custom_msg in error_mapping.items():
+                    if key in msg.lower():
+                        custom_messages.append(custom_msg)
+                        matched = True
+                        break
+                if not matched:
+                    custom_messages.append(msg)
+            
+            raise serializers.ValidationError({"new_password": custom_messages})
+            
+        return data
