@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "dj_rest_auth.registration",
 
     # starter apps
+    'rest_framework',
     "apps.common",
     'apps.users',
     'apps.tasks',

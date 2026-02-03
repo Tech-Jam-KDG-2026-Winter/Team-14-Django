@@ -18,4 +18,5 @@ urlpatterns = [
     path('api/users/', include('apps.users.urls')),
 
     path("healthz/", healthz),
+    path('api/', include('apps.histories.urls')),
 ]
