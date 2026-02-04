@@ -9,7 +9,6 @@ SCOPES = ['https://www.googleapis.com/auth/fitness.activity.read']
 def get_google_fit_steps(user, target_date=None):
     """
     特定のユーザーのGoogle Fitから歩数を取得する。
-    修正ポイント: user.profile.google_fit_credentials (EncryptedJSONField) から取得・保存するように変更
     """
     # 1. ユーザープロファイルから辞書形式の資格情報を取得
     credentials_data = getattr(user.profile, 'google_fit_credentials', None)
@@ -17,9 +16,13 @@ def get_google_fit_steps(user, target_date=None):
     if not credentials_data:
         raise ValueError("Google Fit連携が設定されていません。")
 
+    # 修正ポイント: 'token' か 'access_token' のどちらかにある値を取得する
+    access_token = credentials_data.get('token') or credentials_data.get('access_token')
+    refresh_token = credentials_data.get('refresh_token')
+
     creds = Credentials(
-        token=credentials_data.get('token'),
-        refresh_token=credentials_data.get('refresh_token'),
+        token=access_token,
+        refresh_token=refresh_token,
         token_uri="https://oauth2.googleapis.com/token",
         client_id=settings.GOOGLE_FIT_CLIENT_ID,
         client_secret=settings.GOOGLE_FIT_CLIENT_SECRET,
@@ -30,17 +33,16 @@ def get_google_fit_steps(user, target_date=None):
     if not creds.valid:
         if creds.expired and creds.refresh_token:
             creds.refresh(Request())
-            # 修正：新しくなった情報を辞書形式で更新して保存
-            updated_credentials = credentials_data.copy()
-            updated_credentials.update({
+            
+            # 修正：保存側と名前を確実に合わせるため、'token' キーで保存を統一する
+            updated_credentials = {
                 'token': creds.token,
-                # refresh_tokenが変わる場合もあるため再代入
-                'refresh_token': creds.refresh_token or credentials_data.get('refresh_token'),
-            })
+                'refresh_token': creds.refresh_token or refresh_token,
+            }
             user.profile.google_fit_credentials = updated_credentials
             user.profile.save()
 
-    # 3. フィットネスデータの取得
+    # 3. フィットネスデータの取得 (以下変更なし)
     service = build('fitness', 'v1', credentials=creds)
     
     if target_date is None:
@@ -66,7 +68,6 @@ def get_google_fit_steps(user, target_date=None):
         for dataset_item in bucket.get('dataset', []):
             for point in dataset_item.get('point', []):
                 val = point['value'][0]
-                # intVal または fpVal から値を取得して加算
                 total_steps += val.get('intVal', 0) + int(val.get('fpVal', 0))
                 
     return total_steps
