@@ -10,9 +10,19 @@ def get_google_fit_steps(user, target_date=None):
     """
     特定のユーザーのGoogle Fitから歩数を取得する。
     """
+    # 1. ユーザープロファイルから辞書形式の資格情報を取得
+    credentials_data = getattr(user.profile, 'google_fit_credentials', None)
+    
+    if not credentials_data:
+        raise ValueError("Google Fit連携が設定されていません。")
+
+    # 修正ポイント: 'token' か 'access_token' のどちらかにある値を取得する
+    access_token = credentials_data.get('token') or credentials_data.get('access_token')
+    refresh_token = credentials_data.get('refresh_token')
+
     creds = Credentials(
-        token=user.google_access_token,
-        refresh_token=user.google_refresh_token,
+        token=access_token,
+        refresh_token=refresh_token,
         token_uri="https://oauth2.googleapis.com/token",
         client_id=settings.GOOGLE_FIT_CLIENT_ID,
         client_secret=settings.GOOGLE_FIT_CLIENT_SECRET,
@@ -23,11 +33,16 @@ def get_google_fit_steps(user, target_date=None):
     if not creds.valid:
         if creds.expired and creds.refresh_token:
             creds.refresh(Request())
-            # 重要：新しくなったトークンをDBに保存し直す
-            user.google_access_token = creds.token
-            user.save()
+            
+            # 修正：保存側と名前を確実に合わせるため、'token' キーで保存を統一する
+            updated_credentials = {
+                'token': creds.token,
+                'refresh_token': creds.refresh_token or refresh_token,
+            }
+            user.profile.google_fit_credentials = updated_credentials
+            user.profile.save()
 
-    # 3. フィットネスデータの取得
+    # 3. フィットネスデータの取得 (以下変更なし)
     service = build('fitness', 'v1', credentials=creds)
     
     if target_date is None:
