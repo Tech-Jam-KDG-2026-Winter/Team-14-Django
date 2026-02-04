@@ -18,10 +18,5 @@ class StepCount(models.Model):
         """歩数から習慣化スコアを動的に算出"""
         return round(self.step_count * self.HABIT_SCORE_RATE, 2)
 
-    @property
-    def achievement_rate(self):
-        """履歴画面で使う達成率（目標8000歩の場合）"""
-        return min(int((self.step_count / self.STEP_GOAL) * 100), 100)
-
     def __str__(self):
         return f"{self.user.username} - {self.date}: {self.step_count} steps"

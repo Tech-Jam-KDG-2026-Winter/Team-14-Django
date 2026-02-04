@@ -1,8 +1,10 @@
 from django.urls import path
-from .views import SyncStepsView, StepHistoryView  # クラスをインポート
+from .views import mypage_view, StepHistoryView
 
 urlpatterns = [
-    # クラスベースビューの場合は .as_view() が必要です
-    path('steps/sync/', SyncStepsView.as_view(), name='sync_steps'),
-    path('history/', StepHistoryView.as_view(), name='step_history'),
+    # HTML表示用
+    path('mypage/', mypage_view, name='mypage'),
+    
+    # グラフデータ取得用API
+    path('api/step-history/', StepHistoryView.as_view(), name='api_step_history'),
 ]
