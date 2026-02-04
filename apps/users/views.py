@@ -8,9 +8,19 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import CustomUserDetailsSerializer, UserProfileSerializer, UserCreateSerializer, GoogleFitCredentialSerializer, PasswordChangeSerializer
-import json
+from django.shortcuts import render
+from django.views.generic import TemplateView
 
 User = get_user_model()
+
+def outer_home_view(request):
+    return render(request, 'registration/outer_home.html')
+
+class SignupView(TemplateView):
+    template_name = 'registration/signup.html'
+
+class LoginView(TemplateView):
+    template_name = 'registration/login.html'
 
 class UserMeView(generics.RetrieveUpdateAPIView):
     permission_classes = [IsAuthenticated]
@@ -50,6 +60,7 @@ class StepSyncView(generics.GenericAPIView):
         return Response({"detail": "Google Fitから歩数を取得"})
     
 class UserCreateView(generics.CreateAPIView):
+
     queryset = User.objects.all()
     serializer_class = UserCreateSerializer
     permission_classes = [AllowAny]

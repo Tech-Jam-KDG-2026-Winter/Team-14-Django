@@ -1,0 +1,209 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>サインアップ - Habitree</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        body {
+            background: linear-gradient(
+                rgba(255, 255, 255, 0.5), 
+                rgba(255, 255, 255, 0.5)
+            ), 
+            url("{% static 'img/59243d66ca4808fde41263b6f1c15d4a0ba57fe2.jpg' %}") 
+            no-repeat center center fixed;
+            background-size: cover;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: "Helvetica Neue", Arial, sans-serif;
+        }
+
+        .login-wrapper {
+            text-align: center;
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .app-title {
+            font-size: 2.8rem;
+            font-weight: bold;
+            color: #013c00;
+            margin-bottom: 30px;
+            letter-spacing: 0.1rem;
+        }
+
+        .login-card {
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 40px 35px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-card h2 {
+            font-size: 1.6rem;
+            font-weight: bold;
+            margin-bottom: 25px;
+            text-align: left;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .form-label {
+            font-weight: bold;
+            font-size: 0.85rem;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .form-control {
+            background-color: #e6e6e6;
+            border: none;
+            border-radius: 6px;
+            height: 40px;
+        }
+
+        /* エラー表示用のスタイル */
+        .error-message {
+            color: #d9534f;
+            font-size: 0.75rem;
+            margin-top: 5px;
+            display: none;
+            font-weight: bold;
+        }
+
+        .btn-submit-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 15px;
+        }
+
+        .btn-habitree {
+            background-color: #c4e89b;
+            border: none;
+            color: #000;
+            padding: 8px 28px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+
+        .btn-habitree:hover {
+            background-color: #fff;
+            box-shadow: 0 0 0 2px #a2d572 inset;
+        }
+
+        @media (max-width: 600px) {
+            .login-card {
+                width: 90%;
+                margin: 0 auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-wrapper">
+    <div class="app-title">習慣樹 -Habitree-</div>
+
+    <div class="login-card">
+        <h2>新規登録</h2>
+        
+        <form id="signup-form">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label class="form-label">ユーザー名</label>
+                <input type="text" name="username" class="form-control" required>
+                <div id="error-username" class="error-message"></div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">メールアドレス</label>
+                <input type="email" name="email" class="form-control" required>
+                <div id="error-email" class="error-message"></div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">パスワード</label>
+                <input type="password" name="password" class="form-control" required>
+                <div id="error-password" class="error-message"></div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">パスワード（確認）</label>
+                <input type="password" name="password_confirm" class="form-control" required>
+                <div id="error-password_confirm" class="error-message"></div>
+            </div>
+
+            <div class="btn-submit-container">
+                <button type="submit" class="btn-habitree">
+                    登録する
+                </button>
+            </div>
+        </form>
+
+        <div style="margin-top: 20px; text-align: center;">
+            <a href="{% url 'users:outer_home' %}" style="font-size: 0.85rem; color: #666; text-decoration: none;">
+                ← 戻る
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('signup-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        // 以前のエラー表示をクリア
+        document.querySelectorAll('.error-message').forEach(el => {
+            el.textContent = '';
+            el.style.display = 'none';
+        });
+
+        const formData = new FormData(this);
+        
+        try {
+            const response = await fetch("{% url 'users:signup' %}", {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                }
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                // 成功時：クッション画面へ遷移
+                window.location.href = "{% url 'users:signup_success' %}";
+            } else {
+                // 失敗時：Serializerから返ったエラーを表示
+                for (const [key, messages] of Object.entries(result)) {
+                    const errorDiv = document.getElementById(`error-${key}`);
+                    if (errorDiv) {
+                        // メッセージが配列で届く場合を考慮
+                        errorDiv.textContent = Array.isArray(messages) ? messages[0] : messages;
+                        errorDiv.style.display = 'block';
+                    }
+                }
+            }
+        } catch (error) {
+            alert("通信中にエラーが発生しました。");
+        }
+    });
+</script>
+
+</body>
+</html>

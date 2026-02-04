@@ -1,0 +1,114 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ようこそ - Habitree</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.4)), 
+                        url("{% static 'img/59243d66ca4808fde41263b6f1c15d4a0ba57fe2.jpg' %}") no-repeat center center fixed;
+            background-size: cover;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: sans-serif;
+            overflow: hidden;
+        }
+
+        .home-card {
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 50px 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 450px;
+            width: 90%;
+        }
+
+        .logo-area {
+            margin-bottom: 20px;
+        }
+
+        .brand-name {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #76b852;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .welcome-message {
+            font-size: 1.1rem;
+            color: #555;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* 共通ボタン設定 */
+        .btn-habitree {
+            padding: 14px 30px;
+            border-radius: 30px;
+            font-weight: bold;
+            text-decoration: none;
+            display: block;
+            transition: all 0.3s;
+            border: none;
+        }
+
+        /* 新規登録ボタン */
+        .btn-signup {
+            background-color: #76b852;
+            color: #fff;
+        }
+
+        .btn-signup:hover {
+            background-color: #5a9e3a;
+            transform: scale(1.05);
+            color: #fff;
+        }
+
+        /* ログインボタン */
+        .btn-login {
+            background-color: #c4e89b;
+            color: #000;
+        }
+
+        .btn-login:hover {
+            background-color: #fff;
+            box-shadow: 0 0 0 2px #a2d572 inset;
+            transform: scale(1.05);
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+
+<div class="home-card">
+    <div class="logo-area">
+        <span class="brand-name">Habitree</span>
+    </div>
+    
+    <p class="welcome-message">
+        あなたの習慣を育てて、<br>
+        豊かな森を作りましょう。
+    </p>
+    
+    <div class="button-group">
+        <a href="{% url 'users:signup_page' %}" class="btn-habitree btn-signup">新規登録する</a>
+        <a href="{% url 'users:login_page' %}" class="btn-habitree btn-login">ログイン</a>
+    </div>
+</div>
+
+</body>
+</html>

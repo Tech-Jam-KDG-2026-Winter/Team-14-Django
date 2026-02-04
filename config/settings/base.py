@@ -45,7 +45,6 @@ INSTALLED_APPS = [
     "dj_rest_auth.registration",
 
     # starter apps
-    'rest_framework',
     "apps.common",
     'apps.users',
     'apps.tasks',
@@ -141,7 +140,7 @@ REST_AUTH = {
 
 # 開発用：ログイン/サインアップの挙動
 ACCOUNT_EMAIL_VERIFICATION = 'none'
-ACCOUNT_AUTHENTICATION_METHOD = 'username'
+ACCOUNT_LOGIN_METHODS = {'username'}
 
 # CORS許可設定 (開発用: 全て許可)
 CORS_ALLOW_ALL_ORIGINS = True
@@ -155,3 +154,8 @@ SIMPLE_JWT = {
 }
 
 AUTH_USER_MODEL = 'users.User'
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+DOMAIN = '127.0.0.1:8000'
+SITE_NAME = 'Habitree'
