@@ -1,8 +1,10 @@
 from django.urls import path
-from .views import SyncStepsView, StepHistoryView  # クラスをインポート
+from . import views 
 
 urlpatterns = [
-    # クラスベースビューの場合は .as_view() が必要です
-    path('steps/sync/', SyncStepsView.as_view(), name='sync_steps'),
-    path('history/', StepHistoryView.as_view(), name='step_history'),
+    # 既存の同期用（もし views.SyncStepsView があるならそのままでOK）
+    path('steps/sync/', views.SyncStepsView.as_view(), name='sync_steps'),
+    
+    # 履歴画面用（これ1行だけに絞ります！）
+    path('history/', views.step_history, name='step_history'),
 ]

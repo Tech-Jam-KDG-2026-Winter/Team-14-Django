@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import os
 from pathlib import Path
 from dotenv import load_dotenv
@@ -9,6 +10,32 @@ load_dotenv(BASE_DIR / ".env")
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 DEBUG = os.getenv("DEBUG", "False") == "True"
+=======
+from dotenv import load_dotenv  
+from pathlib import Path
+from datetime import timedelta
+import os
+
+# config/settings/base.py
+# BASE_DIR は manage.py があるディレクトリを指すのが都合が良い
+BASE_DIR = Path(__file__).resolve().parents[2]
+
+load_dotenv(BASE_DIR / '.env')
+
+SECRET_KEY = os.environ.get("SECRET_KEY")
+
+if not SECRET_KEY:
+    raise ValueError("SECRET_KEY is not set")
+
+DEBUG = os.environ.get("DEBUG", "False") == "True"
+
+FERNET_KEY = os.environ.get("FERNET_KEY")
+
+if not FERNET_KEY:
+    raise ValueError("FERNET_KEY is not set")
+
+FERNET_KEYS = [FERNET_KEY]
+>>>>>>> 0d04b101642f086537652a44f30a441f3334c177
 
 ALLOWED_HOSTS = []
 INSTALLED_APPS = [
@@ -18,21 +45,35 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.sites",
+
+    # 外部ライブラリ(API用)
+    "rest_framework",
+    "rest_framework_simplejwt.token_blacklist",
+    "corsheaders",
+    "dj_rest_auth",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "dj_rest_auth.registration",
 
     # starter apps
-    'rest_framework',
     "apps.common",
     'apps.users',
     'apps.tasks',
     'apps.histories',
 ]
 
+SITE_ID = 1
+
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
@@ -81,3 +122,53 @@ STATIC_URL = "static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# 追記
+# REST Framework の基本設定
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+}
+
+# JWT の詳細設定
+REST_AUTH = {
+    'USE_JWT': True,
+    'JWT_AUTH_HTTPONLY': True,
+    'JWT_AUTH_COOKIE': 'my-app-auth',
+    'JWT_AUTH_REFRESH_COOKIE': 'my-refresh-token',
+
+    'USER_DETAILS_SERIALIZER': 'apps.users.serializers.CustomUserDetailsSerializer',
+    
+    'OLD_PASSWORD_FIELD_ENABLED': True,
+    'LOGOUT_ON_PASSWORD_CHANGE': True,
+
+    'TOKEN_MODEL': None,
+
+    'SESSION_LOGIN': False,
+}
+
+# 開発用：ログイン/サインアップの挙動
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_LOGIN_METHODS = {'username'}
+
+# CORS許可設定 (開発用: 全て許可)
+CORS_ALLOW_ALL_ORIGINS = True
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': True,                   # リフレッシュ時に新しいリフレッシュトークンを発行
+    'BLACKLIST_AFTER_ROTATION': True,                # 古いリフレッシュトークンをブラックリストへ
+    'AUTH_HEADER_TYPES': ('Bearer',),
+}
+
+AUTH_USER_MODEL = 'users.User'
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+DOMAIN = '127.0.0.1:8000'
+SITE_NAME = 'Habitree'
