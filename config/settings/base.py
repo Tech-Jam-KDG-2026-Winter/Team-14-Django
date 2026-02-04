@@ -1,13 +1,16 @@
+import os
 from pathlib import Path
+from dotenv import load_dotenv
 
-# config/settings/base.py
-# BASE_DIR は manage.py があるディレクトリを指すのが都合が良い
-BASE_DIR = Path(__file__).resolve().parents[3]
+load_dotenv()
 
-SECRET_KEY = "django-insecure-x!e8w94#_z0x*10ek4f^v2*19%1hs167aj8!57htfo@mxalpeg"
-DEBUG = True
+BASE_DIR = Path(__file__).resolve().parents[2]
+
+SECRET_KEY = os.getenv("SECRET_KEY")
+
+DEBUG = os.getenv("DEBUG", "False") == "True"
+
 ALLOWED_HOSTS = []
-
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
