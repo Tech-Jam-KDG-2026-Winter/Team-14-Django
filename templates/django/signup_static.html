@@ -1,0 +1,85 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>サインアップ - Habitree</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* スタイルはそのまま */
+        body {
+            background: linear-gradient(rgba(255, 255, 255, 0.500), rgba(255, 255, 255, 0.500)), 
+                        url("{% static 'img/59243d66ca4808fde41263b6f1c15d4a0ba57fe2.jpg' %}") no-repeat center center fixed;
+            background-size: cover;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+        }
+        .login-wrapper { text-align: center; width: 100%; max-width: 420px; }
+        .app-title { font-size: 2.8rem; font-weight: bold; color: #013c00; margin-bottom: 30px; letter-spacing: 0.1rem; }
+        .login-card { background-color: rgba(255, 255, 255, 0.95); padding: 40px 35px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1); }
+        .login-card h2 { font-size: 1.6rem; font-weight: bold; margin-bottom: 25px; text-align: left; color: #333; }
+        .form-group { margin-bottom: 15px; text-align: left; }
+        .form-label { font-weight: bold; font-size: 0.85rem; margin-bottom: 6px; display: block; }
+        .form-control { background-color: #e6e6e6; border: none; border-radius: 6px; height: 40px; }
+        .btn-submit-container { display: flex; justify-content: flex-end; margin-top: 15px; }
+        .btn-login { background-color: #c4e89b; border: none; color: #000; padding: 8px 28px; border-radius: 8px; font-weight: bold; font-size: 0.95rem; }
+        .btn-login:hover { background-color: #fff; box-shadow: 0 0 0 2px #a2d572 inset; border: none; }
+    </style>
+</head>
+<body>
+
+<div class="login-wrapper">
+    <div class="app-title">習慣樹 -Habitree-</div>
+
+    <div class="login-card">
+        <h2>サインアップ</h2>
+        
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label class="form-label">ユーザー名</label>
+                <input type="text" name="username" class="form-control" required value="{{ form.username.value|default:'' }}">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">パスワード</label>
+                <input type="password" name="password1" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">パスワード確認</label>
+                <input type="password" name="password2" class="form-control" required>
+                
+                {% if form.errors %}
+                    <div class="text-danger small mt-2">
+                        {% for error in form.non_field_errors %}
+                            {{ error }}<br>
+                        {% endfor %}
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <strong>{{ field.label }}:</strong> {{ error }}<br>
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="btn-submit-container">
+                <button type="submit" class="btn btn-login">登録する</button>
+            </div>
+        </form>
+        
+        <div style="margin-top: 15px; text-align: center; font-size: 0.9rem;">
+            すでにアカウントをお持ちですか？ <a href="{% url 'login' %}">ログイン</a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

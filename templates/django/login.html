@@ -1,0 +1,171 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ログイン画面 - Habitree</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            /* Djangoのstaticタグで背景画像を指定 */
+            background: linear-gradient(rgba(255, 255, 255, 0.500), rgba(255, 255, 255, 0.500)), 
+                        url("{% static 'img/59243d66ca4808fde41263b6f1c15d4a0ba57fe2.jpg' %}") no-repeat center center fixed;
+            background-size: cover;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+        }
+
+        .login-wrapper {
+            text-align: center;
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .app-title {
+            font-size: 2.8rem;
+            font-weight: bold;
+            color: #013c00;
+            margin-bottom: 30px;
+            letter-spacing: 0.1rem;
+        }
+
+        .login-card {
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 40px 35px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-card h2 {
+            font-size: 1.6rem;
+            font-weight: bold;
+            margin-bottom: 25px;
+            text-align: left;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-label {
+            font-weight: bold;
+            font-size: 0.85rem;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .form-control {
+            background-color: #e6e6e6;
+            border: none;
+            border-radius: 6px;
+            height: 44px;
+        }
+
+        .form-control:focus {
+            background-color: #dfdfdf;
+            box-shadow: none;
+            outline: none;
+        }
+
+        .btn-submit-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 10px;
+        }
+
+        .btn-login {
+            background-color: #c4e89b;
+            border: none;
+            color: #000;
+            padding: 8px 28px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            transition: background-color 0.2s;
+        }
+
+        .btn-login:hover {
+            background-color: #fff;
+            box-shadow: 0 0 0 2px #a2d572 inset;
+            border: none;
+        }
+
+        .forgot-password-link {
+            color: #4da11f;
+            text-decoration: none;
+            font-size: 0.96rem;
+            font-weight: bold;
+            letter-spacing: 0.03em;
+            transition: color 0.2s;
+        }
+        .forgot-password-link:hover {
+            color: #206001;
+            text-decoration: underline;
+        }
+
+        /* エラーメッセージ用のスタイル */
+        .error-msg {
+            color: #e64736;
+            font-size: 0.85rem;
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        
+        @media (max-width: 600px) {
+            .login-wrapper { padding: 16px 0; min-height: 100vh; }
+            .login-card { width: 100%; max-width: 80vw; margin: 24px auto 0 auto; padding: 18px 10px 24px 10px; }
+            .app-title { font-size: 1.4rem; }
+            .login-card h2 { font-size: 1.1rem; }
+            .btn-login { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-wrapper">
+    <div class="app-title">習慣樹 -Habitree-</div>
+
+    <div class="login-card">
+        <h2>ログイン</h2>
+
+        <form method="POST" action="{% url 'login' %}">
+            {% csrf_token %}
+
+            {% if form.errors %}
+                <div class="error-msg">
+                    IDまたはパスワードが正しくありません。
+                </div>
+            {% endif %}
+            
+            <div class="form-group">
+                <label class="form-label">ユーザーID</label>
+                <input type="text" name="username" class="form-control" required autofocus>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">パスワード</label>
+                <input type="password" name="password" class="form-control" required>
+            </div>
+
+            <div class="btn-submit-container">
+                <button type="submit" class="btn btn-login">ログイン</button>
+            </div>
+        </form>
+
+        <div style="text-align: right; margin-top: 24px;">
+            <a href="{% url 'password_reset' %}" class="forgot-password-link">
+                パスワードをお忘れの方はこちら
+            </a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

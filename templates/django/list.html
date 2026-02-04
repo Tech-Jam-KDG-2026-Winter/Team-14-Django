@@ -1,0 +1,338 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>リスト・編集 - Habitree</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background-color: #a8d59d;
+            font-family: sans-serif;
+        }
+
+        /* --- ナビゲーション --- */
+        .top-nav {
+            display: flex;
+            height: 120px;
+            background-color: #76b852;
+            align-items: center;
+        }
+
+        .page-title-area {
+            flex-grow: 1;
+            padding-left: 40px;
+            color: white;
+        }
+
+        .page-title-area h1 {
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .menu-area {
+            width: 350px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            color: white;
+            height: 100%;
+        }
+
+        .nav-item {
+            text-align: center;
+            cursor: pointer;
+            text-decoration: none;
+            color: white;
+            transition: opacity 0.2s;
+        }
+
+        .nav-item:hover {
+            opacity: 0.8;
+            color: #e0ffff;
+        }
+
+        .nav-item .material-symbols-outlined {
+            font-size: 2.5rem;
+            display: block;
+        }
+
+        .nav-item span {
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        /* --- メインコンテンツ --- */
+        .container-main {
+            display: flex;
+            padding: 40px;
+            gap: 40px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .list-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 450px;
+        }
+
+        .task-card {
+            background-color: #cdebc1;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            position: relative;
+            min-height: 180px;
+        }
+
+        .task-card h2 {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .task-card ul {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 50px;
+        }
+
+        .task-card li {
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+        }
+
+        .btn-edit-container {
+            position: absolute;
+            bottom: 20px;
+            right: 25px;
+        }
+
+        .btn-edit {
+            background-color: #a8d59d;
+            border: none;
+            border-radius: 8px;
+            padding: 5px 35px;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.2s;
+        }
+
+        .btn-edit:hover {
+            background-color: #fff;
+            color: #2b7c1d;
+            box-shadow: 0 0 0 2px #a8d59d inset;
+        }
+
+        /* --- 右側の成長度合いカード --- */
+        .growth-card {
+            background-color: #cdebc1;
+            border-radius: 15px;
+            padding: 25px;
+            width: 450px;
+            text-align: center;
+        }
+
+        .growth-card h2 {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .growth-display {
+            background: linear-gradient(to bottom, #e0ffff 0%, #ffffff 85%);
+            border-radius: 10px;
+            height: 400px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .plant-img-small {
+            position: absolute; 
+            width: 70%;
+            height: auto;
+            bottom: -110px;
+        }
+
+        /* --- カスタムモーダル --- */
+        .modal-backdrop-custom {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(56, 79, 47, 0.8);
+            z-index: 1060;
+        }
+        .custom-modal-content {
+            background: #b9e6b2;
+            border-radius: 10px;
+            width: 400px;
+            max-width: 83vw;
+            padding: 32px 36px;
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            z-index: 1070;
+            box-shadow: 0 4px 24px rgba(0,0,0,.2);
+        }
+
+        .custom-modal-label {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .custom-modal-select {
+            width: 100%;
+            background-color: #eafae6;
+            border: 1px solid #76b852;
+            border-radius: 6px;
+            padding: 8px;
+            margin-bottom: 25px;
+        }
+
+        .custom-modal-btn {
+            background-color: #91ca8c;
+            border: none;
+            border-radius: 6px;
+            padding: 10px;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        .custom-modal-btn:hover {
+            background-color: #fff;
+            color: #2b7c1d;
+            box-shadow: 0 0 0 2px #a8d59d inset;
+        }
+
+        /* --- スマホ対応 --- */
+        @media (max-width: 767px) {
+            .top-nav { height: 80px; }
+            .page-title-area h1 { font-size: 2rem; }
+            .menu-area {
+                position: fixed; bottom: 0; left: 0; width: 100%; height: 80px;
+                background-color: #76b852; z-index: 100;
+            }
+            .container-main { padding: 20px 20px 100px; }
+            .list-column, .growth-card { width: 100%; }
+            .growth-card { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="top-nav">
+    <div class="page-title-area">
+        <h1>リスト・編集</h1>
+    </div>
+
+    <nav class="menu-area">
+        <a href="{% url 'home' %}" class="nav-item">
+            <span class="material-symbols-outlined">home</span><span>ホーム</span>
+        </a>
+        <a href="{% url 'mypage' %}" class="nav-item">
+            <span class="material-symbols-outlined">person</span><span>マイページ</span>
+        </a>
+        <a href="{% url 'list_edit' %}" class="nav-item">
+            <span class="material-symbols-outlined">view_list</span><span>リスト・編集</span>
+        </a>
+    </nav>
+</header>
+
+<main class="container-main">
+    <div class="list-column">
+        <div class="task-card">
+            <h2>今日のタスク一覧</h2>
+            <ul>
+                {% for task in daily_tasks %}
+                    <li>・{{ task.title }}</li>
+                {% empty %}
+                    <li>今日のタスクはありません</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="task-card">
+            <h2>今週のタスク</h2>
+            <ul>
+                {% if selected_weekly_task %}
+                    <li>・{{ selected_weekly_task.title }}</li>
+                {% else %}
+                    <li class="text-muted">未設定です</li>
+                {% endif %}
+            </ul>
+            <div class="btn-edit-container">
+                <button class="btn btn-edit" id="openEditModalBtn">編集</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="growth-card">
+        <h2>現在の成長度合い</h2>
+        <div class="growth-display">
+            <img src="{% static 'img/Tree_growth_stage/' %}{{ tree_image|default:'t1.png' }}" alt="現在の植物" class="plant-img-small">
+        </div>
+    </div>
+</main>
+
+<div id="editModalBackdrop" class="modal-backdrop-custom" style="display:none;"></div>
+<div id="editModal" class="custom-modal-content" style="display:none;">
+    <div class="custom-modal-label">今週のタスクを選択</div>
+    
+    <form method="POST" action="{% url 'update_weekly_task' %}">
+        {% csrf_token %}
+        <select class="custom-modal-select" name="task_id" id="weeklyTaskSelect">
+            <option value="" disabled selected>選択してください</option>
+            {% for task in all_weekly_options %}
+                <option value="{{ task.id }}">{{ task.title }}</option>
+            {% endfor %}
+        </select>
+        
+        <div class="d-flex gap-2">
+            <button type="button" class="custom-modal-btn flex-grow-1 bg-secondary text-white" id="cancelBtn">閉じる</button>
+            <button type="submit" class="custom-modal-btn flex-grow-1">変更</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    const openBtn = document.getElementById("openEditModalBtn");
+    const modal = document.getElementById("editModal");
+    const backdrop = document.getElementById("editModalBackdrop");
+    const cancelBtn = document.getElementById("cancelBtn");
+
+    openBtn.addEventListener("click", () => {
+        modal.style.display = "flex";
+        backdrop.style.display = "block";
+    });
+
+    function closeModal() {
+        modal.style.display = "none";
+        backdrop.style.display = "none";
+    }
+
+    backdrop.addEventListener("click", closeModal);
+    cancelBtn.addEventListener("click", closeModal);
+
+    window.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeModal();
+    });
+</script>
+
+</body>
+</html>

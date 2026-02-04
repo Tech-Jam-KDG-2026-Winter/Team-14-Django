@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_head %}
+    <title>歩数履歴グラフ - Habitree</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .chart-wrapper {
+            width: 95%;
+            max-width: 900px;
+            margin: 30px auto;
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+        .summary-box {
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: #2e7d32;
+        }
+        #no-data-msg {
+            display: none;
+            text-align: center;
+            padding: 50px;
+            color: #666;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="chart-wrapper">
+        <h1>🚶‍♂️ 今週の歩数履歴</h1>
+        <div class="summary-box">
+            今週の合計スコア: <span id="total-score">0.0</span> pt
+        </div>
+        
+        <div id="no-data-msg">データがまだありません。Google Fitと同期してください。</div>
+        
+        <div class="chart-container" style="position: relative; height:400px; width:100%">
+            <canvas id="stepChart"></canvas>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        const HISTORY_API_URL = "{% url 'step_history' %}"; // urls.pyの名前解決を利用
+    </script>
+    <script src="{% static 'js/history.js' %}"></script>
+{% endblock %}
