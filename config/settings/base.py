@@ -3,6 +3,7 @@ from pathlib import Path
 from datetime import timedelta
 import os
 
+os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 # config/settings/base.py
 # BASE_DIR は manage.py があるディレクトリを指すのが都合が良い
 BASE_DIR = Path(__file__).resolve().parents[2]
@@ -23,7 +24,7 @@ if not FERNET_KEY:
 
 FERNET_KEYS = [FERNET_KEY]
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -155,7 +156,39 @@ SIMPLE_JWT = {
 
 AUTH_USER_MODEL = 'users.User'
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+# Looking to send emails in production? Check out our Email API/SMTP product!
+EMAIL_HOST = 'sandbox.smtp.mailtrap.io'
+EMAIL_HOST_USER = '79fde8d894021d'
+EMAIL_PORT = 2525
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+from dotenv import main
+env_vars = main.dotenv_values(BASE_DIR / '.env')
+EMAIL_HOST_PASSWORD = env_vars.get("EMAIL_HOST_PASSWORD")
+
+# もし読み込めていなければ、起動時にターミナルにエラーを出して止めます
+if not EMAIL_HOST_PASSWORD:
+    raise ValueError(f".envファイルからパスワードを読み込めませんでした。場所を確認してください: {BASE_DIR / '.env'}")
+
+if not EMAIL_HOST_PASSWORD:
+    raise ValueError("EMAIL_HOST_PASSWORD is not set in .env")
+DEFAULT_FROM_EMAIL = 'admin@example.com'
 
 DOMAIN = '127.0.0.1:8000'
 SITE_NAME = 'Habitree'
+LOGIN_URL = 'users:login_page'
+LOGIN_REDIRECT_URL = 'users:login_success_redirect'
+
+GOOGLE_FIT_CLIENT_CONFIG = {
+    "web": {
+        "client_id": env_vars.get("GOOGLE_CLIENT_ID"),
+        "project_id": "habitree-486408",
+        "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+        "token_uri": "https://oauth2.googleapis.com/token",
+        "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+        "client_secret": env_vars.get("GOOGLE_CLIENT_SECRET"),
+        "redirect_uris": ["http://127.0.0.1:8000/google-fit/callback/"],
+    }
+}

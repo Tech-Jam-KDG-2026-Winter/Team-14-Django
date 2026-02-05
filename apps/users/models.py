@@ -65,6 +65,14 @@ class UserProfile(models.Model):
     
     daily_step_goal = models.IntegerField(default=10000)
 
+    # 念の為
+    def save(self, *args, **kwargs):
+        if self.google_fit_credentials and isinstance(self.google_fit_credentials, dict):
+            if 'access_token' in self.google_fit_credentials:
+                self.google_fit_credentials['token'] = self.google_fit_credentials.pop('access_token')
+
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return f"{self.user.username} Profile"
     

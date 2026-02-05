@@ -12,6 +12,10 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
     <style>
+        html {
+            height: 100%;
+        }
+
         body {
             background: linear-gradient(
                 rgba(255, 255, 255, 0.5), 
@@ -20,73 +24,99 @@
             url("{% static 'img/59243d66ca4808fde41263b6f1c15d4a0ba57fe2.jpg' %}") 
             no-repeat center center fixed;
             background-size: cover;
-            height: 100vh;
+            min-height: 100vh;
+            min-height: 95dvh;
             margin: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: sans-serif;
+            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+            padding: 20px;
         }
 
         .login-card {
             background-color: rgba(255, 255, 255, 0.95);
-            padding: 50px 40px;
+            padding: 50px 30px;
             border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             text-align: center;
             max-width: 420px;
-            width: 90%;
+            width: 100%;
+            margin: auto;
         }
 
         .custom-modal-icon {
-            font-size: 5rem;
+            font-size: 5.5rem;
             color: #76b852;
-            margin-bottom: 20px;
-            /* ふわっと浮き出るアニメーション */
-            animation: fadeInDown 0.8s ease-out;
+            margin-bottom: 25px;
+            /* 弾むようなアニメーションに変更 */
+            animation: bounceIn 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        @keyframes fadeInDown {
+        @keyframes bounceIn {
             from {
                 opacity: 0;
-                transform: translateY(-20px);
+                transform: scale(0.5);
             }
             to {
                 opacity: 1;
-                transform: translateY(0);
+                transform: scale(1);
             }
         }
 
         .success-title {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             font-weight: bold;
             color: #013c00;
             margin-bottom: 20px;
+            line-height: 1.3;
         }
 
         .instruction-text {
             font-size: 0.95rem;
             color: #555;
-            margin-bottom: 30px;
-            line-height: 1.6;
+            margin-bottom: 35px;
+            line-height: 1.7;
         }
 
         .btn-green {
-            background-color: #c4e89b;
+            background-color: #76b852; /* 登録・連携画面と合わせたメイン緑 */
             border: none;
-            color: #000;
-            padding: 12px 40px;
+            color: #fff;
+            padding: 14px 20px;
             border-radius: 30px;
             font-weight: bold;
+            font-size: 1.05rem;
             text-decoration: none;
-            display: inline-block;
-            transition: all 0.2s;
+            display: block; /* スマホで押しやすい全幅 */
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(118, 184, 82, 0.2);
         }
 
         .btn-green:hover {
-            background-color: #fff;
-            box-shadow: 0 0 0 2px #a2d572 inset;
-            color: #000;
+            background-color: #5a9e3a;
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        /* モバイル対応の微調整 */
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 40px 25px;
+            }
+            .success-title {
+                font-size: 1.4rem;
+            }
+            .custom-modal-icon {
+                font-size: 4.8rem;
+            }
+        }
+
+        @media (hover: none) {
+            .btn-green:active {
+                transform: scale(0.98);
+                opacity: 0.9;
+            }
         }
     </style>
 </head>
@@ -94,16 +124,16 @@
 
 <div class="login-card">
     <div class="custom-modal-icon">
-        <span class="material-symbols-outlined" style="font-size: inherit;">
+        <span class="material-symbols-outlined" style="font-size: inherit; display: block;">
             park
         </span>
     </div>
     
-    <h2 class="success-title">ようこそ、習慣樹へ！</h2>
+    <h2 class="success-title">準備が整いました！</h2>
     
     <p class="instruction-text">
-        アカウントの作成が完了しました。<br>
-        これから一緒に素敵な習慣を育てましょう。
+        アカウント作成ありがとうございます。<br>
+        これから、あなたの手で<br>豊かな森を育てていきましょう。
     </p>
     
     <a href="{% url 'users:login_page' %}" class="btn-green">

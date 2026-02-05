@@ -4,48 +4,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ログイン画面 - Habitree</title>
+    <title>ログイン - Habitree</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        html {
+            height: 100%;
+        }
+
         body {
-            /* 背景画像の設定をDjango形式に変更 */
-            background: linear-gradient(rgba(255, 255, 255, 0.500), rgba(255, 255, 255, 0.500)), 
+            background: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), 
                         url("{% static 'img/59243d66ca4808fde41263b6f1c15d4a0ba57fe2.jpg' %}") no-repeat center center fixed;
             background-size: cover;
-            height: 100vh;
+            min-height: 100vh;
+            min-height: 95dvh;
             margin: 0;
             display: flex;
             align-items: center;
             justify-content: center;
             font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+            padding: 20px;
         }
 
         .login-wrapper {
             text-align: center;
             width: 100%;
             max-width: 420px;
+            margin: auto;
         }
 
         .app-title {
-            font-size: 2.8rem;
+            font-size: 2.2rem;
             font-weight: bold;
             color: #013c00;
-            margin-bottom: 30px;
-            letter-spacing: 0.1rem;
+            margin-bottom: 25px;
+            letter-spacing: 0.05rem;
+            line-height: 1.2;
         }
 
         .login-card {
             background-color: rgba(255, 255, 255, 0.95);
-            padding: 40px 35px;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            padding: 35px 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
 
         .login-card h2 {
-            font-size: 1.6rem;
+            font-size: 1.4rem;
             font-weight: bold;
             margin-bottom: 25px;
-            text-align: left;
+            text-align: center;
             color: #333;
         }
 
@@ -59,106 +66,86 @@
             font-size: 0.85rem;
             margin-bottom: 6px;
             display: block;
+            color: #444;
+            padding-left: 4px;
         }
 
         .form-control {
-            background-color: #e6e6e6;
-            border: none;
-            border-radius: 6px;
-            height: 44px;
+            background-color: #f2f2f2;
+            border: 2px solid transparent;
+            border-radius: 12px;
+            height: 48px;
+            font-size: 16px; /* スマホの自動ズーム防止 */
+            transition: all 0.2s;
         }
 
         .form-control:focus {
-            background-color: #dfdfdf;
+            background-color: #fff;
+            border-color: #c4e89b;
             box-shadow: none;
             outline: none;
         }
 
         .btn-submit-container {
-            display: flex;
-            justify-content: flex-end;
-            margin-top: 10px;
+            margin-top: 25px;
         }
 
         .btn-login {
-            background-color: #c4e89b;
+            background-color: #76b852; /* 新規登録と同じメイン緑 */
             border: none;
-            color: #000;
-            padding: 8px 28px;
-            border-radius: 8px;
+            color: #fff;
+            width: 100%;
+            padding: 12px;
+            border-radius: 30px;
             font-weight: bold;
-            font-size: 0.95rem;
-            transition: background-color 0.2s;
+            font-size: 1.05rem;
+            transition: all 0.3s;
         }
 
         .btn-login:hover {
-            background-color: #fff;
-            box-shadow: 0 0 0 2px #a2d572 inset;
-            border: none;
+            background-color: #5a9e3a;
+            color: #fff;
         }
 
         .forgot-password-link {
             color: #4da11f;
             text-decoration: none;
-            font-size: 0.96rem;
+            font-size: 0.85rem;
             font-weight: bold;
-            letter-spacing: 0.03em;
             transition: color 0.2s;
+            display: inline-block;
+            margin-top: 15px;
         }
+
         .forgot-password-link:hover {
             color: #206001;
             text-decoration: underline;
         }
-        
-    @media (max-width: 600px) {
-        .login-wrapper {
-            padding: 16px 0;
-            min-height: 100vh;
-        }
-        .login-card {
-            width: 100%;
-            min-width: unset;
-            max-width: 80vw;
-            margin: 24px auto 0 auto;
-            box-sizing: border-box;
-            padding: 18px 10px 24px 10px;
-            border-radius: 14px;
-        }
-        .app-title {
-            font-size: 1.4rem;
-            margin-bottom: 24px;
-            padding-top: 20px;
-        }
-        .login-card h2 {
-            font-size: 1.1rem;
-            margin-bottom: 20px;
-        }
-        .form-group {
-            margin-bottom: 18px;
-        }
-        .form-label {
-            font-size: 0.96rem;
-        }
-        .form-control {
-            height: 38px;
-            font-size: 1rem;
-        }
-        .btn-submit-container {
-            margin-top: 14px;
-        }
-        .btn-login {
-            width: 100%;
-            padding: 10px 0;
-            font-size: 1rem;
-            border-radius: 7px;
-        }
-        .forgot-password-link {
-            display: block;
+
+        .back-link {
             margin-top: 20px;
-            font-size: 0.98rem;
-            text-align: right;
+            display: block;
+            font-size: 0.9rem;
+            color: #666;
+            text-decoration: none;
         }
-    }
+
+        /* モバイル最適化 */
+        @media (max-width: 480px) {
+            .app-title {
+                font-size: 1.8rem;
+            }
+            .login-card {
+                padding: 30px 20px;
+            }
+        }
+
+        @media (hover: none) {
+            .btn-login:active {
+                transform: scale(0.98);
+                opacity: 0.9;
+            }
+        }
     </style>
 </head>
 <body>
@@ -169,16 +156,22 @@
     <div class="login-card">
         <h2>ログイン</h2>
         
-        <form id="login-form" method="POST" action="/api/auth/login/">
+        {% if form.errors %}
+            <div class="alert alert-danger" style="font-size: 0.8rem; padding: 10px; border-radius: 10px;">
+                ユーザー名またはパスワードが正しくありません。
+            </div>
+        {% endif %}
+        
+        <form id="login-form" method="POST" action="{% url 'users:login_page' %}">
             {% csrf_token %}
             <div class="form-group">
                 <label class="form-label">ユーザー名</label>
-                <input type="text" name="username" class="form-control" required>
+                <input type="text" name="username" class="form-control" placeholder="ユーザー名を入力" required>
             </div>
 
             <div class="form-group">
                 <label class="form-label">パスワード</label>
-                <input type="password" name="password" class="form-control" required>
+                <input type="password" name="password" class="form-control" placeholder="パスワードを入力" required>
             </div>
 
             <div class="btn-submit-container">
@@ -186,15 +179,13 @@
             </div>
         </form>
 
-        <div style="text-align: right; margin-top: 24px;">
+        <div style="text-align: center;">
             <a href="{% url 'users:password_reset' %}" class="forgot-password-link">
                 パスワードをお忘れの方はこちら
             </a>
         </div>
         
-        <div style="margin-top: 20px; text-align: center;">
-            <a href="{% url 'users:outer_home' %}" style="font-size: 0.85rem; color: #666; text-decoration: none;">← 戻る</a>
-        </div>
+        <a href="{% url 'users:outer_home' %}" class="back-link">← 戻る</a>
     </div>
 </div>
 

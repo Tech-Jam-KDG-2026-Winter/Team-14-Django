@@ -8,8 +8,16 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import CustomUserDetailsSerializer, UserProfileSerializer, UserCreateSerializer, GoogleFitCredentialSerializer, PasswordChangeSerializer
-from django.shortcuts import render
+from django.conf import settings
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import render, redirect
+from django.urls import reverse
+from django.views import View
 from django.views.generic import TemplateView
+from .models import UserProfile
+import google_auth_oauthlib.flow
+import random
+from apps.tasks.models import Task
 
 User = get_user_model()
 
@@ -53,11 +61,6 @@ class GoogleFitAuthView(generics.GenericAPIView):
             {"detail": "Google Fit認証情報を保存しました"},
             status=status.HTTP_200_OK
         )
-    
-class StepSyncView(generics.GenericAPIView):
-    permission_classes = [IsAuthenticated]
-    def post(self, request):
-        return Response({"detail": "Google Fitから歩数を取得"})
     
 class UserCreateView(generics.CreateAPIView):
 
@@ -123,3 +126,91 @@ class UserDeleteView(APIView):
         response.delete_cookie('my-refresh-token')
 
         return response
+    
+class LoginSuccessRedirectView(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        # シグナルによりProfileは必ず存在するので直接参照可能
+        profile = request.user.profile
+        
+        # 判定1: Google Fit 連携がまだ（トークンが空）なら連携画面へ
+        if not profile.google_fit_credentials:
+            return redirect('users:fit_link')
+
+        # 判定2: 今週の目標（weekly_heavy_goal）が未設定ならタスク選択画面へ
+        if not profile.weekly_heavy_goal:
+            return redirect('users:task_select')
+
+        # 判定3: 全て揃っていればホーム画面へ
+        return redirect('users:home')
+    
+class GoogleFitLinkView(LoginRequiredMixin, TemplateView):
+    """1. 連携ボタンを表示する画面"""
+    template_name = 'registration/fit_link.html'
+
+class GoogleFitAuthView(LoginRequiredMixin, View):
+    """2. Googleの認証画面へリダイレクトさせるView"""
+    def get(self, request):
+        flow = google_auth_oauthlib.flow.Flow.from_client_config(
+            settings.GOOGLE_FIT_CLIENT_CONFIG, # settingsに保存したClient ID等の設定
+            scopes=['https://www.googleapis.com/auth/fitness.activity.read']
+        )
+        flow.redirect_uri = request.build_absolute_uri(reverse('users:google_fit_callback'))
+        
+        authorization_url, state = flow.authorization_url(access_type='offline', include_granted_scopes='true')
+        request.session['oauth_state'] = state
+        return redirect(authorization_url)
+
+class GoogleFitCallbackView(LoginRequiredMixin, View):
+    """3. Googleから戻ってきた後の処理（トークン保存）"""
+    def get(self, request):
+        state = request.session.get('oauth_state')
+        flow = google_auth_oauthlib.flow.Flow.from_client_config(
+            settings.GOOGLE_FIT_CLIENT_CONFIG,
+            scopes=['https://www.googleapis.com/auth/fitness.activity.read'],
+            state=state
+        )
+        flow.redirect_uri = request.build_absolute_uri(reverse('users:google_fit_callback'))
+        
+        # 認可コードをトークンに交換
+        flow.fetch_token(authorization_response=request.build_absolute_uri(request.get_full_path()))
+        
+        # トークン（JSON）を保存
+        profile = request.user.profile
+        profile.google_fit_credentials = flow.credentials.to_json()
+        profile.save()
+        
+        # 次のステップ（タスク選択）へ飛ばす
+        return redirect('users:task_select')
+    
+class TaskSelectView(LoginRequiredMixin, View):
+    def get(self, request):
+        heavy_tasks = list(Task.objects.filter(category='heavy'))
+        
+        num_tasks = min(len(heavy_tasks), 3)
+        display_tasks = random.sample(heavy_tasks, num_tasks) if heavy_tasks else []
+
+        return render(request, 'registration/task_select.html', {
+            'tasks': display_tasks
+        })
+    
+    def post(self, request):
+        task_id = request.POST.get('task_choice')
+
+        if not task_id:
+            return redirect('users:task_select')
+        
+        profile, created = UserProfile.objects.get_or_create(user=request.user)
+
+        serializer = UserProfileSerializer(
+            profile, 
+            data={'weekly_heavy_goal': task_id}, 
+            partial=True
+        )
+        
+        if serializer.is_valid():
+            UserProfile.objects.filter(user=request.user).update(
+                weekly_heavy_goal_id=serializer.validated_data['weekly_heavy_goal'].id
+            )
+            return redirect('users:home')
+        
+        return redirect('users:task_select')

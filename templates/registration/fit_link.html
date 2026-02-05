@@ -1,0 +1,149 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Fit連携 - Habitree</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        html {
+            height: 100%;
+        }
+
+        body {
+            background: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), 
+                        url("{% static 'img/59243d66ca4808fde41263b6f1c15d4a0ba57fe2.jpg' %}") no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            min-height: 95dvh;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+            padding: 20px;
+        }
+
+        .fit-wrapper {
+            text-align: center;
+            width: 100%;
+            max-width: 420px;
+            margin: auto;
+        }
+
+        .app-title {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: #013c00;
+            margin-bottom: 25px;
+            letter-spacing: 0.05rem;
+            line-height: 1.2;
+        }
+
+        .fit-card {
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 40px 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .fit-card h2 {
+            font-size: 1.4rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .description {
+            font-size: 0.95rem;
+            color: #555;
+            margin-bottom: 35px;
+            line-height: 1.7;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Google連携ボタン */
+        .btn-google {
+            background-color: #fff;
+            color: #757575;
+            padding: 12px 20px;
+            border-radius: 30px;
+            font-weight: bold;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            font-size: 1rem;
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .btn-google:active {
+            transform: scale(0.98);
+            background-color: #f8f8f8;
+        }
+
+        /* スキップ（後で設定）リンク */
+        .btn-skip {
+            background-color: transparent;
+            color: #888;
+            padding: 10px;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: color 0.2s;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        .btn-skip:hover {
+            color: #555;
+            text-decoration: underline;
+        }
+
+        /* モバイル対応の微調整 */
+        @media (max-width: 480px) {
+            .app-title { font-size: 1.8rem; }
+            .fit-card { padding: 35px 25px; }
+            .fit-card h2 { font-size: 1.3rem; }
+            .description { font-size: 0.9rem; }
+            .btn-google { font-size: 0.95rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="fit-wrapper">
+    <div class="app-title">習慣樹 -Habitree-</div>
+
+    <div class="fit-card">
+        <h2>Google Fit と連携</h2>
+        <p class="description">
+            歩数データを同期して、<br>
+            あなたの木を健やかに育てましょう。<br>
+            <span style="font-size: 0.8rem; opacity: 0.8;">※歩数に応じた成長ボーナスが得られます</span>
+        </p>
+        
+        <div class="button-group">
+            <a href="{% url 'users:google_fit_auth' %}" class="btn-google">
+                <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" width="22" height="22" class="me-2" alt="Google">
+                Google で連携を開始
+            </a>
+            
+            <div style="text-align: center;">
+                <a href="{% url 'users:task_select' %}" class="btn-skip">
+                    今はしない（後で設定）
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

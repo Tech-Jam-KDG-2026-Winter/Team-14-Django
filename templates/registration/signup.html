@@ -4,11 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>サインアップ - Habitree</title>
+    <title>新規登録 - Habitree</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
     <style>
+        html {
+            height: 100%;
+        }
+
         body {
             background: linear-gradient(
                 rgba(255, 255, 255, 0.5), 
@@ -17,45 +21,49 @@
             url("{% static 'img/59243d66ca4808fde41263b6f1c15d4a0ba57fe2.jpg' %}") 
             no-repeat center center fixed;
             background-size: cover;
-            height: 100vh;
+            min-height: 100vh;
+            min-height: 95dvh; /* スマホ用 */
             margin: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: "Helvetica Neue", Arial, sans-serif;
+            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", sans-serif;
+            padding: 20px; /* 余白を確保 */
         }
 
         .login-wrapper {
             text-align: center;
             width: 100%;
             max-width: 420px;
+            margin: auto;
         }
 
         .app-title {
-            font-size: 2.8rem;
+            font-size: 2.2rem;
             font-weight: bold;
             color: #013c00;
-            margin-bottom: 30px;
-            letter-spacing: 0.1rem;
+            margin-bottom: 25px;
+            letter-spacing: 0.05rem;
+            line-height: 1.2;
         }
 
         .login-card {
             background-color: rgba(255, 255, 255, 0.95);
-            padding: 40px 35px;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            padding: 35px 25px;
+            border-radius: 20px; /* ようこそ画面に合わせる */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
 
         .login-card h2 {
-            font-size: 1.6rem;
+            font-size: 1.4rem;
             font-weight: bold;
             margin-bottom: 25px;
-            text-align: left;
+            text-align: center;
             color: #333;
         }
 
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 18px;
             text-align: left;
         }
 
@@ -64,50 +72,87 @@
             font-size: 0.85rem;
             margin-bottom: 6px;
             display: block;
+            color: #444;
+            padding-left: 4px;
         }
 
         .form-control {
-            background-color: #e6e6e6;
-            border: none;
-            border-radius: 6px;
-            height: 40px;
+            background-color: #f2f2f2;
+            border: 2px solid transparent;
+            border-radius: 12px; /* 少し丸みを帯びさせる */
+            height: 48px; /* タップしやすく高く */
+            font-size: 1rem;
+            transition: all 0.2s;
         }
 
-        /* エラー表示用のスタイル */
+        .form-control:focus {
+            background-color: #fff;
+            border-color: #c4e89b;
+            box-shadow: none;
+        }
+
         .error-message {
             color: #d9534f;
             font-size: 0.75rem;
             margin-top: 5px;
             display: none;
             font-weight: bold;
+            padding-left: 4px;
         }
 
         .btn-submit-container {
-            display: flex;
-            justify-content: flex-end;
-            margin-top: 15px;
+            margin-top: 25px;
         }
 
         .btn-habitree {
-            background-color: #c4e89b;
+            background-color: #76b852; /* メインカラーに変更 */
             border: none;
-            color: #000;
-            padding: 8px 28px;
-            border-radius: 8px;
+            color: #fff;
+            width: 100%; /* スマホでは全幅が押しやすい */
+            padding: 12px;
+            border-radius: 30px;
             font-weight: bold;
-            font-size: 0.95rem;
+            font-size: 1.05rem;
             transition: all 0.3s;
+            cursor: pointer;
         }
 
         .btn-habitree:hover {
-            background-color: #fff;
-            box-shadow: 0 0 0 2px #a2d572 inset;
+            background-color: #5a9e3a;
+            color: #fff;
         }
 
-        @media (max-width: 600px) {
+        .back-link {
+            margin-top: 20px;
+            display: block;
+            font-size: 0.9rem;
+            color: #666;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: #333;
+        }
+
+        /* モバイル最適化 */
+        @media (max-width: 480px) {
+            .app-title {
+                font-size: 1.8rem;
+            }
             .login-card {
-                width: 90%;
-                margin: 0 auto;
+                padding: 30px 20px;
+            }
+            .form-control {
+                height: 45px;
+                font-size: 16px; /* iPhoneでのズーム防止 */
+            }
+        }
+
+        @media (hover: none) {
+            .btn-habitree:active {
+                transform: scale(0.98);
+                opacity: 0.9;
             }
         }
     </style>
@@ -116,7 +161,7 @@
 
 <div class="login-wrapper">
     <div class="app-title">習慣樹 -Habitree-</div>
-
+    
     <div class="login-card">
         <h2>新規登録</h2>
         
@@ -125,13 +170,13 @@
             
             <div class="form-group">
                 <label class="form-label">ユーザー名</label>
-                <input type="text" name="username" class="form-control" required>
+                <input type="text" name="username" class="form-control" placeholder="例: 山田太郎" required>
                 <div id="error-username" class="error-message"></div>
             </div>
 
             <div class="form-group">
                 <label class="form-label">メールアドレス</label>
-                <input type="email" name="email" class="form-control" required>
+                <input type="email" name="email" class="form-control" placeholder="example@mail.com" required>
                 <div id="error-email" class="error-message"></div>
             </div>
 
@@ -154,11 +199,9 @@
             </div>
         </form>
 
-        <div style="margin-top: 20px; text-align: center;">
-            <a href="{% url 'users:outer_home' %}" style="font-size: 0.85rem; color: #666; text-decoration: none;">
-                ← 戻る
-            </a>
-        </div>
+        <a href="{% url 'users:outer_home' %}" class="back-link">
+            ← 戻る
+        </a>
     </div>
 </div>
 
@@ -186,14 +229,11 @@
             const result = await response.json();
 
             if (response.ok) {
-                // 成功時：クッション画面へ遷移
                 window.location.href = "{% url 'users:signup_success' %}";
             } else {
-                // 失敗時：Serializerから返ったエラーを表示
                 for (const [key, messages] of Object.entries(result)) {
                     const errorDiv = document.getElementById(`error-${key}`);
                     if (errorDiv) {
-                        // メッセージが配列で届く場合を考慮
                         errorDiv.textContent = Array.isArray(messages) ? messages[0] : messages;
                         errorDiv.style.display = 'block';
                     }

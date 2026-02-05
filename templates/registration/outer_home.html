@@ -5,29 +5,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ようこそ - Habitree</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        html {
+            height: 100%;
+        }
+        
         body {
-            background: linear-gradient(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.4)), 
+            background: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), 
                         url("{% static 'img/59243d66ca4808fde41263b6f1c15d4a0ba57fe2.jpg' %}") no-repeat center center fixed;
             background-size: cover;
-            height: 100vh;
+            min-height: 100vh;
+            min-height: 95dvh;
             margin: 0;
             display: flex;
             align-items: center;
             justify-content: center;
             font-family: sans-serif;
+            padding: 20px;
             overflow: hidden;
         }
 
         .home-card {
             background-color: rgba(255, 255, 255, 0.95);
-            padding: 50px 40px;
+            padding: 40px 30px;
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             text-align: center;
             max-width: 450px;
-            width: 90%;
+            width: 100%;
+            margin: auto;
         }
 
         .logo-area {
@@ -35,27 +41,27 @@
         }
 
         .brand-name {
-            font-size: 3rem;
+            font-size: 2.5rem;
             font-weight: bold;
             color: #76b852;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             display: block;
+            line-height: 1.2;
         }
 
         .welcome-message {
-            font-size: 1.1rem;
+            font-size: 1rem;
             color: #555;
-            margin-bottom: 40px;
+            margin-bottom: 35px;
             line-height: 1.6;
         }
 
         .button-group {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 12px;
         }
 
-        /* 共通ボタン設定 */
         .btn-habitree {
             padding: 14px 30px;
             border-radius: 30px;
@@ -64,9 +70,10 @@
             display: block;
             transition: all 0.3s;
             border: none;
+            font-size: 1rem;
+            will-change: transform;
         }
 
-        /* 新規登録ボタン */
         .btn-signup {
             background-color: #76b852;
             color: #fff;
@@ -74,11 +81,9 @@
 
         .btn-signup:hover {
             background-color: #5a9e3a;
-            transform: scale(1.05);
             color: #fff;
         }
 
-        /* ログインボタン */
         .btn-login {
             background-color: #c4e89b;
             color: #000;
@@ -87,8 +92,64 @@
         .btn-login:hover {
             background-color: #fff;
             box-shadow: 0 0 0 2px #a2d572 inset;
-            transform: scale(1.05);
             color: #000;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 15px;
+            }
+
+            .home-card {
+                padding: 35px 25px;
+                border-radius: 15px;
+            }
+
+            .brand-name {
+                font-size: 2rem;
+            }
+
+            .welcome-message {
+                font-size: 0.95rem;
+                margin-bottom: 30px;
+            }
+
+            .btn-habitree {
+                padding: 12px 25px;
+                font-size: 0.95rem;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .home-card {
+                padding: 30px 20px;
+            }
+
+            .brand-name {
+                font-size: 1.8rem;
+            }
+
+            .welcome-message {
+                font-size: 0.9rem;
+            }
+
+            .btn-habitree {
+                padding: 11px 20px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (hover: none) {
+            .btn-signup:active {
+                transform: scale(0.98);
+                background-color: #5a9e3a;
+            }
+
+            .btn-login:active {
+                transform: scale(0.98);
+                background-color: #fff;
+                box-shadow: 0 0 0 2px #a2d572 inset;
+            }
         }
     </style>
 </head>
@@ -96,7 +157,8 @@
 
 <div class="home-card">
     <div class="logo-area">
-        <span class="brand-name">Habitree</span>
+        <span class="brand-name">習慣樹</span>
+        <span class="brand-name">-Habitree-</span>
     </div>
     
     <p class="welcome-message">

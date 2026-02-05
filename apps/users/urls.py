@@ -1,7 +1,7 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
 from django.views.generic import TemplateView
-from .views import UserMeView, GoogleFitAuthView, StepSyncView, UserCreateView, CustomLogoutView, UserDeleteView, outer_home_view, SignupView, LoginView
+from .views import UserMeView, GoogleFitAuthView, UserCreateView, CustomLogoutView, UserDeleteView,outer_home_view, SignupView, LoginView, LoginSuccessRedirectView, GoogleFitLinkView, GoogleFitCallbackView, TaskSelectView
 
 app_name = 'users'
 
@@ -11,7 +11,7 @@ urlpatterns = [
     path('signup/', UserCreateView.as_view(), name='signup'),
     path('signup-page/', SignupView.as_view(), name='signup_page'),
     path('signup-success/', TemplateView.as_view(template_name='registration/signup_success.html'), name='signup_success'),
-    path('login-page/', LoginView.as_view(), name='login_page'),
+    path('login-page/', auth_views.LoginView.as_view(), name='login_page'),
     path('logout/', CustomLogoutView.as_view(), name='custom_logout'), 
     path('delete/', UserDeleteView.as_view(), name='user_delete'),
 
@@ -40,7 +40,16 @@ urlpatterns = [
         template_name='registration/password_reset_complete.html'        # 最終完了画面
     ), name='password_reset_complete'),
 
-    # GoogleFit連携
-    path('fit-auth/', GoogleFitAuthView.as_view(), name='fit_auth'),
-    path('sync-steps/', StepSyncView.as_view(), name='sync_steps'),
+    # ログイン後の振り分け
+    path('login-redirect/', LoginSuccessRedirectView.as_view(), name='login_success_redirect'),
+    
+    # Fit連携画面
+    # TemplateViewの方は削除して、作成した GoogleFitLinkView に一本化します
+    path('fit-link/', GoogleFitLinkView.as_view(), name='fit_link'),
+    path('google-fit/auth/', GoogleFitAuthView.as_view(), name='google_fit_auth'),
+    path('google-fit/callback/', GoogleFitCallbackView.as_view(), name='google_fit_callback'),
+
+    # タスク選択・ホーム
+    path('task-select/', TaskSelectView.as_view(), name='task_select'),
+    path('home/', TemplateView.as_view(template_name='home.html'), name='home'), # テンプレート名を指定   
 ]
