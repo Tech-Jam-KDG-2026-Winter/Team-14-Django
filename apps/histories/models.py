@@ -1,27 +1,55 @@
 from django.db import models
 from django.conf import settings
+from django.utils import timezone
 
-class StepCount(models.Model):
-    # レートを定数として定義
-    HABIT_SCORE_RATE = 0.04
-    STEP_GOAL = 8000
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    date = models.DateField()
-    step_count = models.PositiveIntegerField(default=0)
+class Task(models.Model):
+    TASK_TYPE_CHOICES = (
+        ("fixed", "固定"),
+        ("random", "ランダム"),
+        ("weekly", "週1重い運動"),
+    )
+
+    title = models.CharField(max_length=100)
+    task_type = models.CharField(max_length=10, choices=TASK_TYPE_CHOICES)
+    is_completed = models.BooleanField(default=False)
+    target_date = models.DateField(default=timezone.now)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
 
     class Meta:
-        unique_together = ('user', 'date')
-
-    @property
-    def calculated_value(self):
-        """歩数から習慣化スコアを動的に算出"""
-        return round(self.step_count * self.HABIT_SCORE_RATE, 2)
-
-    @property
-    def achievement_rate(self):
-        """履歴画面で使う達成率（目標8000歩の場合）"""
-        return min(int((self.step_count / self.STEP_GOAL) * 100), 100)
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "target_date", "title"],
+                name="unique_task_per_user_per_day"
+            )
+        ]
 
     def __str__(self):
-        return f"{self.user.username} - {self.date}: {self.step_count} steps"
+        return self.title
+
+
+class Notification(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
+    message = models.CharField(max_length=200)
+    target_date = models.DateField()
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "target_date"],
+                name="unique_notification_per_user_per_day"
+            )
+        ]
+
+    def __str__(self):
+        return self.message

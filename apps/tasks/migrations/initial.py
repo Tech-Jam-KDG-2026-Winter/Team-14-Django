@@ -16,9 +16,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="Task",
             fields=[
-                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("id", models.BigAutoField(primary_key=True, serialize=False)),
                 ("title", models.CharField(max_length=100)),
-                ("task_type", models.CharField(choices=[("fixed", "固定"), ("random", "ランダム"), ("weekly", "週1重い運動")], max_length=10)),
+                ("task_type", models.CharField(max_length=10)),
                 ("is_completed", models.BooleanField(default=False)),
                 ("target_date", models.DateField(default=django.utils.timezone.now)),
                 ("created_at", models.DateTimeField(auto_now_add=True)),
@@ -28,7 +28,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name="Notification",
             fields=[
-                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("id", models.BigAutoField(primary_key=True, serialize=False)),
                 ("message", models.CharField(max_length=200)),
                 ("target_date", models.DateField()),
                 ("is_read", models.BooleanField(default=False)),

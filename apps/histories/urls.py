@@ -1,8 +1,12 @@
 from django.urls import path
-from .views import SyncStepsView, StepHistoryView  # クラスをインポート
+from . import views
 
 urlpatterns = [
-    # クラスベースビューの場合は .as_view() が必要です
-    path('steps/sync/', SyncStepsView.as_view(), name='sync_steps'),
-    path('history/', StepHistoryView.as_view(), name='step_history'),
+    path("", views.today_tasks_view, name="today_tasks"),
+    path("complete/<int:task_id>/", views.complete_task, name="complete_task"),
+    path(
+        "notification/read/<int:notification_id>/",
+        views.mark_notification_read,
+        name="notification_read"
+    ),
 ]
